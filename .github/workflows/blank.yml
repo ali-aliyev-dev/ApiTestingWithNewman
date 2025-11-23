@@ -28,8 +28,8 @@ jobs:
       - name: Create report folder
         run: mkdir -p newman
 
-      # 5️⃣ Run Postman Tests using collection + environment
-      - name: Run Newman with Environment
+      # 5️⃣ Run Newman with Environment
+      - name: Run Newman Tests
         run: |
           newman run "APITestingCopy.postman_collection.json" \
             -e "SimpleAPI.postman_environment.json" \
