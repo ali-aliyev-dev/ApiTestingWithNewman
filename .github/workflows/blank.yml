@@ -1,0 +1,44 @@
+name: Run Newman Tests with HTML Report
+
+on:
+  push:
+    branches:
+      - main  # yalnız main branch-a push zamanı işləsin
+
+jobs:
+  run-api-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.11.0"
+
+      - name: Install Newman + HTML reporter
+        run: |
+          npm install -g newman newman-reporter-htmlextra
+
+      - name: Run Postman Tests with HTML report
+        run: |
+          mkdir -p newman
+          # Opsional environment faylı varsa istifadə et
+          if [ -f postman/environment.json ]; then
+            newman runSimpleAPI.postman_environment(1).json \
+              -e postman/environment.json \
+              -r cli,htmlextra \
+              --reporter-htmlextra-export newman/report.html
+          else
+            newman run APITestingCopy.postman_collection.json \
+              -r cli,htmlextra \
+              --reporter-htmlextra-export newman/report.html
+          fi
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-html-report
+          path: newman/report.html
