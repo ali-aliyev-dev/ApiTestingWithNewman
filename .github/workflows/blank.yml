@@ -1,11 +1,11 @@
-name: Run Postman Environment Only
+name: Run Postman Tests with Environment
 
 on:
   push:
     branches: ["main"]
 
 jobs:
-  run-environment-tests:
+  run-postman-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,16 +25,17 @@ jobs:
           npm install -g newman newman-reporter-htmlextra
 
       # 4️⃣ Create folder for report
-      - name: Create newman report folder
+      - name: Create report folder
         run: mkdir -p newman
 
-      # 5️⃣ Run Newman environment only
-      - name: Run Postman Environment
+      # 5️⃣ Run Postman Tests using Environment
+      # 🔹 Collection lazımdır, bu nümunədə boş collection (DummyCollection.json) istifadə olunur
+      - name: Run Newman with Environment
         run: |
           newman run "DummyCollection.json" \
-            -e SimpleAPI.postman_environment.json \
+            -e "SimpleAPI.postman_environment.json" \
             -r cli,htmlextra \
-            --reporter-htmlextra-export newman/report.html
+            --reporter-htmlextra-export "newman/report.html"
 
       # 6️⃣ Upload HTML report as artifact
       - name: Upload HTML report
