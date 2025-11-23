@@ -2,7 +2,7 @@ name: Postman Tests
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   run-api-tests:
@@ -11,6 +11,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Show repo files (for debugging)
+        run: ls -R .
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -24,10 +27,14 @@ jobs:
       - name: Create report folder
         run: mkdir -p newman
 
-      - name: Run Postman Tests
+      - name: Run Postman Tests (dynamic path)
         run: |
-          newman run ApiTestingWithNewman/APITestingCopy.postman_collection.json \
-            -e ApiTestingWithNewman/SimpleAPI.postman_environment.json \
+          COLLECTION_PATH=$(find . -name "APITestingCopy.postman_collection.json" | head -n 1)
+          ENV_PATH=$(find . -name "SimpleAPI.postman_environment.json" | head -n 1)
+          echo "Using collection: $COLLECTION_PATH"
+          echo "Using environment: $ENV_PATH"
+          newman run "$COLLECTION_PATH" \
+            -e "$ENV_PATH" \
             -r cli,htmlextra \
             --reporter-htmlextra-export newman/report.html
 
