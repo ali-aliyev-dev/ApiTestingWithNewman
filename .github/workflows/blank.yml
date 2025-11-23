@@ -1,4 +1,4 @@
-name: Run Postman Tests with Environment
+name: Run Postman Tests
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: 18
 
-      # 3️⃣ Install Newman + HTML reporter
+      # 3️⃣ Install Newman + htmlextra reporter
       - name: Install Newman and htmlextra reporter
         run: |
           npm install -g newman newman-reporter-htmlextra
@@ -28,11 +28,10 @@ jobs:
       - name: Create report folder
         run: mkdir -p newman
 
-      # 5️⃣ Run Postman Tests using Environment
-      # 🔹 Collection lazımdır, bu nümunədə boş collection (DummyCollection.json) istifadə olunur
+      # 5️⃣ Run Postman Tests using collection + environment
       - name: Run Newman with Environment
         run: |
-          newman run "DummyCollection.json" \
+          newman run "APITestingCopy.postman_collection.json" \
             -e "SimpleAPI.postman_environment.json" \
             -r cli,htmlextra \
             --reporter-htmlextra-export "newman/report.html"
