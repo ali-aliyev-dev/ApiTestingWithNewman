@@ -19,20 +19,35 @@ jobs:
         with:
           node-version: 18
 
-      # 3️⃣ Install Newman + htmlextra reporter
+      # 3️⃣ Install Newman + HTML reporter
       - name: Install Newman and htmlextra reporter
         run: |
           npm install -g newman newman-reporter-htmlextra
 
-      # 4️⃣ Create folder for report
+      # 4️⃣ Create folder for HTML report
       - name: Create report folder
         run: mkdir -p newman
 
-      # 5️⃣ Run Newman with Environment
-      - name: Run Newman Tests
+      # 5️⃣ Run Newman tests
+      - name: Run Newman with Environment
         run: |
-          newman run "APITestingCopy.postman_collection.json" \
-            -e "SimpleAPI.postman_environment.json" \
+          # Faylların yerləşdiyi qovluğu dəqiq göstərin
+          COLLECTION_PATH="ApiTestingWithNewman/APITestingCopy.postman_collection.json"
+          ENV_PATH="ApiTestingWithNewman/SimpleAPI.postman_environment.json"
+
+          # Fayl yoxlanışı
+          if [ ! -f "$COLLECTION_PATH" ]; then
+            echo "Collection faylı tapılmadı: $COLLECTION_PATH"
+            exit 1
+          fi
+          if [ ! -f "$ENV_PATH" ]; then
+            echo "Environment faylı tapılmadı: $ENV_PATH"
+            exit 1
+          fi
+
+          # Newman run
+          newman run "$COLLECTION_PATH" \
+            -e "$ENV_PATH" \
             -r cli,htmlextra \
             --reporter-htmlextra-export "newman/report.html"
 
