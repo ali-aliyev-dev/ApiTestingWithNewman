@@ -1,4 +1,4 @@
-name: Run Postman Tests
+name: Run Postman Tests with Dummy Collection
 
 on:
   push:
@@ -29,11 +29,10 @@ jobs:
         run: mkdir -p newman
 
       # 5️⃣ Run Newman tests
-      - name: Run Newman with Environment
+      - name: Run Newman with Dummy Collection
         run: |
-          # Faylların yerləşdiyi qovluğu dəqiq göstərin
-          COLLECTION_PATH="ApiTestingWithNewman/APITestingCopy.postman_collection.json"
-          ENV_PATH="ApiTestingWithNewman/SimpleAPI.postman_environment.json"
+          COLLECTION_PATH="DummyCollection.json"
+          ENV_PATH="SimpleAPI.postman_environment.json"
 
           # Fayl yoxlanışı
           if [ ! -f "$COLLECTION_PATH" ]; then
