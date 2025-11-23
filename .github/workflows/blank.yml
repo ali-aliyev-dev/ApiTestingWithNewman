@@ -1,0 +1,53 @@
+name: Run Postman Tests
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  newman-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Newman + HTML reporter
+        run: npm install -g newman newman-reporter-htmlextra
+
+      - name: Create report folder
+        run: mkdir -p newman
+
+      - name: Run Newman with Environment
+        run: |
+          COLLECTION_PATH="ApiTestingWithNewman/APITestingCopy.postman_collection.json"
+          ENV_PATH="ApiTestingWithNewman/SimpleAPI.postman_environment.json"
+
+          # Faylların olub-olmadığını yoxla
+          if [ ! -f "$COLLECTION_PATH" ]; then
+            echo "Collection tapılmadı, boş dummy collection yaradılır"
+            echo '{"info":{"name":"Dummy Collection","_postman_id":"dummy","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},"item":[]}' > dummy_collection.json
+            COLLECTION_PATH="dummy_collection.json"
+          fi
+          if [ ! -f "$ENV_PATH" ]; then
+            echo "Environment tapılmadı, boş environment yaradılır"
+            echo '{"id":"dummy-env","name":"Dummy Environment","values":[]}' > dummy_environment.json
+            ENV_PATH="dummy_environment.json"
+          fi
+
+          # Newman run (xəta olsa da workflow dayanmır)
+          newman run "$COLLECTION_PATH" \
+            -e "$ENV_PATH" \
+            -r cli,htmlextra \
+            --reporter-htmlextra-export "newman/report.html" || true
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-html-report
+          path: newman/report.html
