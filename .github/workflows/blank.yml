@@ -24,10 +24,10 @@ jobs:
       - name: Create report folder
         run: mkdir -p newman
 
-      - name: Run Postman Tests with Environment and HTML report
+      - name: Run Postman Tests
         run: |
-          newman run APITestingCopy.postman_collection.json \
-            -e SimpleAPI.postman_environment.json \
+          newman run ApiTestingWithNewman/APITestingCopy.postman_collection.json \
+            -e ApiTestingWithNewman/SimpleAPI.postman_environment.json \
             -r cli,htmlextra \
             --reporter-htmlextra-export newman/report.html
 
