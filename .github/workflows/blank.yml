@@ -1,58 +1,31 @@
-name: Run Postman Tests with Dummy Collection
+name: Run Postman Tests
 
 on:
   push:
     branches: ["main"]
 
 jobs:
-  run-postman-tests:
+  newman-tests:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repository
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      # 3️⃣ Install Newman + HTML reporter
-      - name: Install Newman and htmlextra reporter
-        run: |
-          npm install -g newman newman-reporter-htmlextra
+      - run: npm install -g newman newman-reporter-htmlextra
 
-      # 4️⃣ Create folder for HTML report
-      - name: Create report folder
-        run: mkdir -p newman
+      - run: mkdir -p newman
 
-      # 5️⃣ Run Newman tests
-      - name: Run Newman with Dummy Collection
-        run: |
-          COLLECTION_PATH="DummyCollection.json"
-          ENV_PATH="SimpleAPI.postman_environment.json"
-
-          # Fayl yoxlanışı
-          if [ ! -f "$COLLECTION_PATH" ]; then
-            echo "Collection faylı tapılmadı: $COLLECTION_PATH"
-            exit 1
-          fi
-          if [ ! -f "$ENV_PATH" ]; then
-            echo "Environment faylı tapılmadı: $ENV_PATH"
-            exit 1
-          fi
-
-          # Newman run
-          newman run "$COLLECTION_PATH" \
-            -e "$ENV_PATH" \
+      - run: |
+          newman run "APITestingCopy.postman_collection.json" \
+            -e "SimpleAPI.postman_environment.json" \
             -r cli,htmlextra \
             --reporter-htmlextra-export "newman/report.html"
 
-      # 6️⃣ Upload HTML report as artifact
-      - name: Upload HTML report
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: newman-html-report
           path: newman/report.html
